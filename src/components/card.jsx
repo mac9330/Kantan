@@ -12,7 +12,7 @@ class Card extends React.Component {
       description: "",
       id: "",
     };
-    this.state.title = this.props.title; // Todo setState
+    this.state.title = this.props.title;
     this.state.description = this.props.description;
     this.state.id = this.props.id;
   }

@@ -49,7 +49,6 @@ class Kanban extends React.Component {
 
   updateLocalStorage() {
     this.clearAll();
-    console.log(this.state);
     const allColumns = this.state.allColumns;
     for (let i = 0; i < allColumns.length; i++) {
       let cards = [];
@@ -61,7 +60,6 @@ class Kanban extends React.Component {
   }
 
   getLocalStorage() {
-    console.log(localStorage)
     let tasks = [];
     let columns = [];
     const colName = this.state.currentColumn;
@@ -270,7 +268,9 @@ class Kanban extends React.Component {
                 ref={provided.innerRef}
               >
                 {this.state[colName].cards.map((item, idx) => {
-                  // console.log(item)
+
+                  // console.log("START")
+                  console.log(item)
                   return (
                     <Draggable
                       key={idx + colName}
@@ -284,7 +284,12 @@ class Kanban extends React.Component {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                           >
-                            {item}
+                            {console.log(item.title)}
+                            <Card 
+                              title={item.props.title} 
+                              description={item.props.description} 
+                              id={item.props.id} 
+                            />
                             <div className="item-footer lightred flex row">
                               <button
                                 className="item-button"
