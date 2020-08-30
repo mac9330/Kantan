@@ -1,27 +1,35 @@
 import React from "react";
 import Card from './card.jsx';
-// import { HTML5Backend } from "react-dnd-html5-backend";
-// import DragDropContext from 'react-dnd';
-
-
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import uuid from "uuid/v4"
 
 
 class Kanban extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      todos: [],
-      inprogress: [],
-      done: [],
-      title: "New Task",
-      description: "add description",
+      todos: {
+        cards: [],
+        id: uuid(),
+        colName: "todos"
+      },
+      inprog: {
+        cards: [],
+        id: uuid(),
+        colName: "inprog"
+      },
+      done: {
+        cards: [],
+        id: uuid(),
+        colName: "done"
+      },
     };
 
     this.deleteItem = this.deleteItem.bind(this);
     this.editItem = this.editItem.bind(this);
-    this.addTodo = this.addTodo.bind(this);
-    this.addProgress = this.addProgress.bind(this);
-    this.addDone = this.addDone.bind(this);
+    this.addCard = this.addCard.bind(this);
+    this.createSection = this.createSection.bind(this)
+    this.onDragEnd = this.onDragEnd.bind(this)
   }
 
   // componentDidMount() {
@@ -68,116 +76,110 @@ class Kanban extends React.Component {
   //   </div>
   // }
 
-  addTodo() {
-    let todos = this.state.todos.concat(<Card />);
-    this.setState({ todos: todos });
+  addCard(colName) {
+    let cards = this.state[colName].cards.concat(<Card />);
+    this.setState({ [colName]: {cards, id: this.state[colName].id, colName: colName}});
   }
 
-  addProgress() {
-    let inprogress = this.state.inprogress.concat(<Card />);
-    this.setState({ inprogress: inprogress });
-  }
-  
-  addDone() {
-    let done = this.state.done.concat(<Card />);
-    this.setState({ done: done });
-  }
-
-  deleteItem(column_name, e) {
-    let array = [...this.state[column_name]];
+  deleteItem(colName, e) {
+    let cards = [...this.state[colName].cards];
     let index = e.currentTarget.parentElement.parentElement.parentElement.id;
-    array.splice(index, 1);
-    this.setState({ [column_name]: array });
+    cards.splice(index, 1);
+    this.setState({ [colName]: {cards, id: this.state[colName].id, colName: colName}});
   }
 
-  editItem() {}
+  editItem(colName, e) {
+    let cards = [...this.state[colName].cards];
+    let index = e.currentTarget.parentElement.parentElement.parentElement.id;
+    cards.splice(index, 1);
+    this.setState({ [colName]: {cards, id: this.state[colName].id, colName: colName}});
+  }
 
+  onDragEnd(result) {
+    const {destination, source} = result
+    if(!destination) return;
+    const endColName = Object.values(this.state).find(x => x.id === destination.droppableId).colName
+    const startColName = Object.values(this.state).find(x => x.id === source.droppableId).colName
+    const cardDupes = [...this.state[endColName].cards]
+    let [removed] = cardDupes.splice(source.index, 1)
+    if(endColName === startColName) {
+      cardDupes.splice(destination.index, 0, removed)
+      this.setState({...this.state,
+        [endColName]: {cards: cardDupes, id: this.state[endColName].id, colName: endColName},
+      });
+    } else {
+      const startColCards = this.state[startColName].cards 
+      const startColDupes = [...startColCards] // source items
+      const endColCards = this.state[endColName].cards 
+      const endColDupes = [...endColCards] // dest items
+      let [removed] = startColDupes.splice(source.index, 1)
+      endColDupes.splice(destination.index, 0, removed)
+      this.setState({
+        [startColName]: {cards: startColDupes, id: this.state[startColName].id, colName: startColName},
+        [endColName]: {cards: endColDupes, id: this.state[endColName].id, colName: endColName},
+      })
+    }
+  }
+
+  createSection(colName) {
+    return(
+      <section id="done-container" className="flex column width-20">
+        <h2>{colName}</h2>
+        <button className="mb-15" onClick={() => this.addCard(colName)}>+</button>
+        <Droppable droppableId={this.state[colName].id}>
+          {(provided) => {
+            return(
+              <div id={colName} {...provided.droppableProps} ref={provided.innerRef}>
+                {this.state[colName].cards.map((item, idx)=> {
+                  return (
+                    <Draggable key={idx + colName} draggableId={idx + colName} index={idx}>
+                      {(provided) => {
+                        return(
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
+                            {item}
+                            <div className="item-footer lightred flex row">
+                            <button
+                                className="item-button"
+                                onClick={(e) => this.editItem(colName, e)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="item-button ml-10"
+                                onClick={(e) =>
+                                  this.deleteItem(colName, e)
+                                }
+                              >
+                                Delete
+                              </button>
+                            </div>
+                      </div>
+                        )
+                      }}
+                    </Draggable>
+                  )
+                })}
+                {provided.placeholder}
+              </div>
+            )
+          } }
+        </Droppable>
+      </section>
+    )
+  }
 
   render() {
     return (
-      <>
-        <h1 className="main-title">Kanban</h1>
-        <div className="space-around flex row bg-lightgray height-100">
-          <section id="todo-container" className="flex column width-20">
-            <h2>To Do</h2>
-            <button className="mb-15" onClick={this.addTodo}>
-              +
-            </button>
-            <ul>
-              {this.state.todos.map((todo, idx) => {
-                return (
-                  <li key={idx} id={idx}>
-                    {todo}
-                    <button className="item-button" onClick={this.editItem}>
-                      Edit
-                    </button>
-                    <button
-                      className="item-button ml-10"
-                      onClick={(e) => this.deleteItem("todos", e)}
-                    >
-                      Delete
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-
-          <section id="progress-container" className="flex column width-20">
-            <h2>In Progress</h2>
-            <button className="mb-15" onClick={this.addProgress}>
-              +
-            </button>
-            <ul>
-              {this.state.inprogress.map((inprog, idx) => {
-                return (
-                  <li key={idx}>
-                    {inprog}
-                    <div className="item-footer flex row">
-                      <button className="item-button" onClick={this.editItem}>
-                        Edit
-                      </button>
-                      <button
-                        className="item-button ml-10"
-                        onClick={(e) => this.deleteItem("inprogress", e)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-
-          <section id="done-container" className="flex column width-20">
-            <h2>Done</h2>
-            <button className="mb-15" onClick={this.addDone}>
-              +
-            </button>
-            <ul>
-              {this.state.done.map((el, idx) => {
-                return (
-                  <>
-                      <li key={idx}>
-                        {el}
-                        <button className="item-button" onClick={this.editItem}>
-                          Edit
-                        </button>
-                        <button
-                          className="item-button ml-10"
-                          onClick={(e) => this.deleteItem("done", e)}
-                        >
-                          Delete
-                        </button>
-                      </li>
-                  </>
-                );
-              })}
-            </ul>
-          </section>
+      <div>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <h1 className="main-title">Kanban</h1>
+          <div className="space-around flex row bg-lightgray height-100">
+          {this.createSection("todos")}
+          {this.createSection("inprog")}
+          {/* {this.createSection("done")} */}
         </div>
-      </>
+        </DragDropContext>
+      </div>
     );
   }
 }
