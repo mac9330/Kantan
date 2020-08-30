@@ -8,23 +8,25 @@ class Card extends React.Component {
     
     this.state = {
       editable: false,
+      title: "",
+      description: "",
+      id: "",
     };
+    this.state.title = this.props.title; // Todo setState
+    this.state.description = this.props.description;
+    this.state.id = this.props.id;
   }
   
-  // [{props}, drag] = useDrag({
-  //   item: {
-  //     type: ItemTypes.CARD,
-  //   },
-  // })
+
   render() {
     return (
-      <div>
+      <div id={this.state.id}>
         <div className="flex column todo-item">
           <div className="flex row space-between">
-            <h3 className="ml-10">New Done</h3>
+            <h3 className="ml-10">{this.state.title}</h3>
           </div>
           <div>
-            <p className="ml-10 item-description"> Test Text</p>
+            <p className="ml-10 item-description">{this.state.description}</p>
           </div>
         </div>
       </div>

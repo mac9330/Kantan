@@ -4,5 +4,6 @@
 
 @import "./layout.scss";
 
-@import "./board.scss"
+@import "./board.scss";
 
+@import "./modal.scss"
