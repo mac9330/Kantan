@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/mac9330/Kantan/static/css/main.8136a131.chunk.css",
+    "main.js": "/mac9330/Kantan/static/js/main.d3485cf2.chunk.js",
+    "main.js.map": "/mac9330/Kantan/static/js/main.d3485cf2.chunk.js.map",
+    "runtime-main.js": "/mac9330/Kantan/static/js/runtime-main.7153b9ba.js",
+    "runtime-main.js.map": "/mac9330/Kantan/static/js/runtime-main.7153b9ba.js.map",
+    "static/js/2.7035feeb.chunk.js": "/mac9330/Kantan/static/js/2.7035feeb.chunk.js",
+    "static/js/2.7035feeb.chunk.js.map": "/mac9330/Kantan/static/js/2.7035feeb.chunk.js.map",
+    "index.html": "/mac9330/Kantan/index.html",
+    "precache-manifest.da7f5d6a52a2b53541525517eaf03f8b.js": "/mac9330/Kantan/precache-manifest.da7f5d6a52a2b53541525517eaf03f8b.js",
+    "service-worker.js": "/mac9330/Kantan/service-worker.js",
+    "static/css/main.8136a131.chunk.css.map": "/mac9330/Kantan/static/css/main.8136a131.chunk.css.map",
+    "static/js/2.7035feeb.chunk.js.LICENSE.txt": "/mac9330/Kantan/static/js/2.7035feeb.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7153b9ba.js",
+    "static/js/2.7035feeb.chunk.js",
+    "static/css/main.8136a131.chunk.css",
+    "static/js/main.d3485cf2.chunk.js"
+  ]
+}
