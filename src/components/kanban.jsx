@@ -49,27 +49,30 @@ class Kanban extends React.Component {
     // this.clearAll()
   }
 
-  componentWillUnmount() {
-
-  }
+  // componentWillUnmount() {
+  //   const allColumns = this.state.allColumns;
+  //   localStorage.setItem("allColumns", JSON.stringify(allColumns));
+  // }
 
   updateLocalStorage() {
     // this.clearAll();
     const allColumns = this.state.allColumns;
-    for (let i = 0; i < allColumns.length; i++) {
-      let cards = [];
-      this.state[allColumns[i]].cards.forEach((card) => {
-        cards.push(card)
-        localStorage.setItem(allColumns[i], JSON.stringify(cards));
-        debugger
-      });
-    }
-    debugger
+    // for (let i = 0; i < allColumns.length; i++) {
+    //   let cards = [];
+    //   this.state[allColumns[i]].cards.forEach((card) => {
+    //     cards.push(card)
+    //     localStorage.setItem(allColumns[i], JSON.stringify(cards));
+    //     // debugger
+    //   });
+    // }
+    allColumns.forEach(ele => (
+      localStorage.setItem(ele, JSON.stringify(this.state[ele]))
+    ))
+    // debugger
     localStorage.setItem("allColumns", JSON.stringify(allColumns));
   }
 
   async getLocalStorage() {
-    let columns = [];
     if (!Object.keys(localStorage).length) {  // localstorage of all columns instead of length??
       await this.setState({
         allColumns: ["todos", "inprog", "done"],
@@ -102,39 +105,41 @@ class Kanban extends React.Component {
         JSON.stringify(["todos", "inprog", "done"])
       );
     } else {
-    let allColumns = JSON.parse(localStorage.getItem("allColumns"));
-    // console.log(allColumns)
-        for (let i = 0; i < allColumns.length; i++) {
-          let currentColumn = allColumns[i];
-          // if (!allColumns.includes(currentColumn)) allColumns.push(currentColumn);
-          // await this.setState({ allColumns: allColumns });
+      let allColumns = JSON.parse(localStorage.getItem("allColumns"));
+      // console.log(allColumns)
+      
+      for (let i = 0; i < allColumns.length; i++) {
+        let currentColumn = allColumns[i];
+        // if (!allColumns.includes(currentColumn)) allColumns.push(currentColumn);
+        // await this.setState({ allColumns: allColumns });
+        await this.setState({
+          [currentColumn]: {
+            cards: [],
+            id: uuid(),
+            colName: `${currentColumn}`,
+          },
+        });
+        let cards = [];
+        let columnItems = JSON.parse(localStorage.getItem(allColumns[i]));
+        let length = columnItems.cards.length;
+        // debugger;
+        for (let j = 0; j < length; j++) {
+          let title = columnItems.cards[j].title;
+          let description = columnItems.cards[j].description;
+          let id = columnItems.cards[j].id;
+          const card = { title: title, description: description, id: id };
+          cards.push(card);
           await this.setState({
-            [currentColumn]: {
-              cards: [],
-              id: uuid(),
-              colName: `${currentColumn}`,
-            },
+            [this.state[currentColumn].cards]: this.state[currentColumn].cards.push(card),
           });
-          const cards = [];
-          let columnItems = JSON.parse(localStorage.getItem(allColumns[i]));
-          console.log(columnItems)
-          let length = columnItems.cards.length;
-          debugger
-          for (let j = 0; j < length; j++) {
-            let title = columnItems.cards[j].title;
-            let description = columnItems.cards[j].description;
-            let id = columnItems.cards[j].id;
-            const card = { title: title, description: description, id: id };
-            // cards = [];
-            cards.push(card)
-          }
-          await this.setState({
-              [this.state[currentColumn].cards]: cards,
-            });
         }
-      this.setState({ allColumns: allColumns });
-      localStorage.removeItem("allColumns");
+      }
+      this.setState({ "allColumns": allColumns });
+      console.log(this.state);
+      // localStorage.removeItem("allColumns");
     }
+    // const allColumns = this.state.allColumns;
+    // localStorage.setItem("allColumns", JSON.stringify(allColumns));
   }
 
   async handleSubmit(e) {
@@ -219,7 +224,6 @@ class Kanban extends React.Component {
         return idx = index
       }
     })
-    // debugger
     cards.splice(idx, 1,);
     await this.setState({
       [colName]: { cards, id: this.state[colName].id, colName: colName },
