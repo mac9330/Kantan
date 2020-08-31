@@ -90,7 +90,7 @@ class Kanban extends React.Component {
         });
         let cards = [];
         let columnItems = JSON.parse(localStorage.getItem(allColumns[i]));
-        debugger
+
         let length = columnItems.cards.length;
         for (let j = 0; j < length; j++) {
           let title = columnItems.cards[j].title;
@@ -149,25 +149,25 @@ class Kanban extends React.Component {
     return (
       <div className="create-todo-container">
         <form onSubmit={this.handleSubmit.bind(this)}>
-          <div>
+          <div className="mb-15">
             <label>
-              Title
               <input
+                placeholder="Title"
                 type="text"
                 value={this.state.currentTitle}
                 onChange={this.update("currentTitle")}
               />
             </label>
             <label>
-              description
               <input
+                placeholder="Description"
                 type="text"
                 value={this.state.currentDescription}
                 onChange={this.update("currentDescription")}
               />
             </label>
           </div>
-          <button>Submit</button>
+          <button className="submit-todo">Submit</button>
         </form>
       </div>
     );
@@ -269,10 +269,10 @@ class Kanban extends React.Component {
     return (
       <div id="done-container">
         <h2>{colName}</h2>
-        <button className="mb-15" onClick={() => this.removeCol(colName)}>
+        <button className="mb-15 blue" onClick={() => this.removeCol(colName)}>
           -
         </button>
-        <button className="mb-15" onClick={() => this.addCard(colName)}>
+        <button className="mb-15 blue" onClick={() => this.addCard(colName)}>
           +
         </button>
         <Droppable droppableId={colName}>
@@ -329,8 +329,7 @@ class Kanban extends React.Component {
 
   removeCol(colName) {
     localStorage.removeItem(colName);
-    
-    // debugger
+
     const idx = this.state.allColumns.indexOf(colName)
     let columns = Array.from(this.state.allColumns)
     columns.splice(idx, 1)
@@ -359,9 +358,9 @@ class Kanban extends React.Component {
     return (
       <div className="newTodoForm">
         <div className="modal-content">
-          Modal form
+          <h1>Add Todo</h1>
           {this.createTodo()}
-          <button onClick={this.closeModal}>Close</button>
+          <button className="modal-close" onClick={this.closeModal}>Close</button>
         </div>
       </div>
     );
@@ -373,16 +372,17 @@ class Kanban extends React.Component {
         <DragDropContext onDragEnd={(result) => this.onDragEnd(result)}>
           <h1 className="main-title">Kanban</h1>
           <div className="createColumn">
-            <form onSubmit={() => this.createColumn()}>
-              create Column:
+            <form className="columnForm" onSubmit={() => this.createColumn()}>
+
               <input
+                placeholder="Add Column"
                 type="text"
                 value={this.state.createColumn}
                 onChange={this.update("createColumn")}
               />
               <button className="createColBtn">+</button>
             </form>
-            <button onClick={this.clearAll}>Reset to default</button>
+            <button className="reset-button" onClick={this.clearAll}>Reset to default</button>
           </div>
           <div className="space-around flex row bg-lightgray height-100">
             {this.state.allColumns.map((column, idx) => (
