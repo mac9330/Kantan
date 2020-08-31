@@ -60,32 +60,22 @@ class Kanban extends React.Component {
   }
 
   getLocalStorage() {
-    let tasks = [];
     let columns = [];
-    const colName = this.state.currentColumn;
     if (Object.keys(localStorage)) {
       columns = Object.keys(localStorage);
       for (let i = 0; i < columns.length; i++) {
         let currentColumn = columns[i]
         let columnItems = JSON.parse(localStorage.getItem(columns[i]));
         for (let i = 0; i < columnItems.length; i++) {
-          let title = columnItems[i].props.title;
-          let description = columnItems[i].props.description;
-          let id = columnItems[i].props.id;
-          const card = (
-            <Card
-              title={title}
-              description={description}
-              id={id}
-            ></Card>
-          );
-          // this.setState({[this.state[currentColumn].cards]: this.state[currentColumn].cards.concat(card)})
+          let title = columnItems[i].title;
+          let description = columnItems[i].description;
+          let id = columnItems[i].id;
+          const card = {title: title, description: description, id: id};
           this.setState({
             [this.state[currentColumn].cards]: this.state[
               currentColumn
             ].cards.push(card),
           });
-          // console.log({[this.state[currentColumn].cards]: this.state[currentColumn].cards.concat(card)})
         }
       }
     }
@@ -100,14 +90,9 @@ class Kanban extends React.Component {
     } else {
       cards = JSON.parse(localStorage.getItem(colName));
     }
-    const card = (<Card
-      title={this.state.currentTitle}
-      description={this.state.currentDescription}
-      id={uuid()}
-    ></Card>);
+    const card = {title: this.state.currentTitle, description: this.state.currentDescription, id: uuid()};
     this.setState({[this.state[colName].cards]: this.state[colName].cards.push(card)})
     this.updateLocalStorage();
-    // localStorage.setItem(colName, JSON.stringify(cards.concat(card)));
     this.closeModal();
     this.setState({currentTitle: "", currentDescription: ""})
   }
@@ -124,9 +109,6 @@ class Kanban extends React.Component {
   }
 
   createTodo() {
-    let currentColumn = this.state.currentColumn
-    let title = "";
-    let description = "";
     return (
       <div className="create-todo-container">
         <form onSubmit={this.handleSubmit.bind(this)}>
@@ -174,10 +156,10 @@ class Kanban extends React.Component {
 
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
-    const deletedCard = cards.find((x) => x.props.id === id)
+    const deletedCard = cards.find((x) => x.id === id)
     let idx = 0
     cards.forEach((el, index) => {
-      if (el.props.id === deletedCard.props.id) {
+      if (el.id === deletedCard.id) {
         return idx = index
       }
     })
@@ -192,10 +174,10 @@ class Kanban extends React.Component {
   editItem(colName, e) {
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
-    const deletedCard = cards.find((x) => x.props.id === id)
+    const deletedCard = cards.find((x) => x.id === id)
     let idx = 0
     cards.forEach((el, index) => {
-      if (el.props.id === deletedCard.props.id) {
+      if (el.id === deletedCard.id) {
         return idx = index
       }
     })
@@ -208,58 +190,53 @@ class Kanban extends React.Component {
   }
 
   onDragEnd(result) {
-    const { destination, source } = result;
+    const { destination, source, draggableId } = result;
     if (!destination) return;
-    const endColName = Object.values(this.state).find(
-      (x) => x.id === destination.droppableId
-    ).colName;
-    const startColName = Object.values(this.state).find(
-      (x) => x.id === source.droppableId
-    ).colName;
-    // console.log(endColName);
-    const cardDupes = [...this.state[endColName].cards];
-    let [removed] = cardDupes.splice(source.index, 1);
-    if (endColName === startColName) {
-      cardDupes.splice(destination.index, 0, removed);
+    if ( destination.droppableId === source.droppableId && destination.index === source.index) return;
+      const startColumn = this.state[source.droppableId].cards;
+      const endColumn = this.state[destination.droppableId].cards;
+      const startDupes = Array.from(startColumn);
+      const endDupes = Array.from(endColumn);
+      
+    if (endColumn === startColumn) {
+        let [removed] = startDupes.splice(source.index, 1)
+        startDupes.splice(destination.index, 0, removed);
+        this.setState({
+          [source.droppableId]: {
+            cards: startDupes,
+            id: this.state[destination.droppableId].id,
+            colName: source.droppableId,
+          }
+        })
+        } else {
+      let [removed] = startDupes.splice(source.index, 1);
+      endDupes.splice(destination.index, 0, removed);
       this.setState({
-        [endColName]: {
-          cards: cardDupes,
-          id: this.state[endColName].id,
-          colName: endColName,
+        [source.droppableId]: {
+          cards: startDupes,
+          id: this.state[source.droppableId].id,
+          colName: source.droppableId,
         },
-      });
-    } else {
-      const startColCards = this.state[startColName].cards;
-      const startColDupes = [...startColCards]; // source items
-      const endColCards = this.state[endColName].cards;
-      const endColDupes = [...endColCards]; // dest items
-      let [removed] = startColDupes.splice(source.index, 1);
-      endColDupes.splice(destination.index, 0, removed);
-      this.setState({
-        [startColName]: {
-          cards: startColDupes,
-          id: this.state[startColName].id,
-          colName: startColName,
+        [destination.droppableId]: {
+          cards: endDupes,
+          id: this.state[destination.droppableId].id,
+          colName: destination.droppableId,
         },
-        [endColName]: {
-          cards: endColDupes,
-          id: this.state[endColName].id,
-          colName: endColName,
-        },
-      });
+      })
     }
-    this.updateLocalStorage()
+    this.updateLocalStorage();
+    // this.createSection()
   }
 
   createSection(colName) {
-    // debugger
+    console.log(this.state)
     return (
       <section id="done-container" className="flex column width-20">
         <h2>{colName}</h2>
         <button className="mb-15" onClick={() => this.addCard(colName)}>
           +
         </button>
-        <Droppable droppableId={this.state[colName].id}>
+        <Droppable droppableId={colName}>
           {(provided) => {
             return (
               <div
@@ -268,13 +245,10 @@ class Kanban extends React.Component {
                 ref={provided.innerRef}
               >
                 {this.state[colName].cards.map((item, idx) => {
-
-                  // console.log("START")
-                  console.log(item)
                   return (
                     <Draggable
-                      key={idx + colName}
-                      draggableId={idx + colName}
+                      key={item.id}
+                      draggableId={item.id}
                       index={idx}
                     >
                       {(provided) => {
@@ -284,11 +258,11 @@ class Kanban extends React.Component {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                           >
-                            {console.log(item.title)}
+                            {/* {console.log(item.title)} */}
                             <Card 
-                              title={item.props.title} 
-                              description={item.props.description} 
-                              id={item.props.id} 
+                              title={item.title} 
+                              description={item.description} 
+                              id={item.id} 
                             />
                             <div className="item-footer lightred flex row">
                               <button
@@ -333,6 +307,7 @@ class Kanban extends React.Component {
 
   render() {
     // result => onDragEnd(result, columns, setColumns)
+    // this.clearAll()
     return (
       <div>
         <DragDropContext onDragEnd={result => this.onDragEnd(result)}>
