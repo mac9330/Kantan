@@ -8,26 +8,11 @@ class Kanban extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // todos: {
-      //   cards: [],
-      //   id: uuid(),
-      //   colName: "todos",
-      // },
-      // inprog: {
-      //   cards: [],
-      //   id: uuid(),
-      //   colName: "inprog",
-      // },
-      // done: {
-      //   cards: [],
-      //   id: uuid(),
-      //   colName: "done",
-      // },
-      // allColumns: ["todos", "inprog", "done"],
       allColumns: [],
       currentColumn: "",
       currentTitle: "",
       currentDescription: "",
+      createColumn: "",
     };
 
     this.deleteItem = this.deleteItem.bind(this);
@@ -49,31 +34,18 @@ class Kanban extends React.Component {
     // this.clearAll()
   }
 
-  // componentWillUnmount() {
-  //   const allColumns = this.state.allColumns;
-  //   localStorage.setItem("allColumns", JSON.stringify(allColumns));
-  // }
-
   updateLocalStorage() {
     // this.clearAll();
     const allColumns = this.state.allColumns;
-    // for (let i = 0; i < allColumns.length; i++) {
-    //   let cards = [];
-    //   this.state[allColumns[i]].cards.forEach((card) => {
-    //     cards.push(card)
-    //     localStorage.setItem(allColumns[i], JSON.stringify(cards));
-    //     // debugger
-    //   });
-    // }
-    allColumns.forEach(ele => (
+    allColumns.forEach((ele) =>
       localStorage.setItem(ele, JSON.stringify(this.state[ele]))
-    ))
-    // debugger
+    );
     localStorage.setItem("allColumns", JSON.stringify(allColumns));
   }
 
   async getLocalStorage() {
-    if (!Object.keys(localStorage).length) {  // localstorage of all columns instead of length??
+    if (!Object.keys(localStorage).length) {
+      // localstorage of all columns instead of length??
       await this.setState({
         allColumns: ["todos", "inprog", "done"],
         todos: {
@@ -106,12 +78,9 @@ class Kanban extends React.Component {
       );
     } else {
       let allColumns = JSON.parse(localStorage.getItem("allColumns"));
-      // console.log(allColumns)
-      
+
       for (let i = 0; i < allColumns.length; i++) {
         let currentColumn = allColumns[i];
-        // if (!allColumns.includes(currentColumn)) allColumns.push(currentColumn);
-        // await this.setState({ allColumns: allColumns });
         await this.setState({
           [currentColumn]: {
             cards: [],
@@ -121,8 +90,8 @@ class Kanban extends React.Component {
         });
         let cards = [];
         let columnItems = JSON.parse(localStorage.getItem(allColumns[i]));
+        debugger
         let length = columnItems.cards.length;
-        // debugger;
         for (let j = 0; j < length; j++) {
           let title = columnItems.cards[j].title;
           let description = columnItems.cards[j].description;
@@ -130,36 +99,43 @@ class Kanban extends React.Component {
           const card = { title: title, description: description, id: id };
           cards.push(card);
           await this.setState({
-            [this.state[currentColumn].cards]: this.state[currentColumn].cards.push(card),
+            [this.state[currentColumn].cards]: this.state[
+              currentColumn
+            ].cards.push(card),
           });
         }
       }
-      this.setState({ "allColumns": allColumns });
+      this.setState({ allColumns: allColumns });
       console.log(this.state);
-      // localStorage.removeItem("allColumns");
     }
-    // const allColumns = this.state.allColumns;
-    // localStorage.setItem("allColumns", JSON.stringify(allColumns));
   }
 
   async handleSubmit(e) {
     e.preventDefault();
     let cards;
-    const colName = this.state.currentColumn
+    const colName = this.state.currentColumn;
     if (localStorage.getItem(colName) === null) {
       cards = [];
     } else {
       cards = JSON.parse(localStorage.getItem(colName));
     }
-    const card = {title: this.state.currentTitle, description: this.state.currentDescription, id: uuid()};
-    await this.setState({[this.state[colName].cards]: this.state[colName].cards.push(card)})
+    const card = {
+      title: this.state.currentTitle,
+      description: this.state.currentDescription,
+      id: uuid(),
+    };
+    await this.setState({
+      [this.state[colName].cards]: this.state[colName].cards.push(card),
+    });
     this.updateLocalStorage();
     this.closeModal();
-    this.setState({currentTitle: "", currentDescription: ""})
+    this.setState({ currentTitle: "", currentDescription: "" });
   }
 
   clearAll() {
     localStorage.clear();
+    this.setState({ allColumns: [] });
+    this.getLocalStorage();
   }
 
   update(field) {
@@ -205,26 +181,25 @@ class Kanban extends React.Component {
   closeModal() {
     const modal = document.getElementsByClassName("newTodoForm");
     modal[0].style.display = "none";
-    this.setState({newTodoContainer: "hidden"})
+    this.setState({ newTodoContainer: "hidden" });
   }
 
   addCard(colName) {
-    this.setState({currentColumn: colName});
+    this.setState({ currentColumn: colName });
     this.openModal();
   }
 
   async deleteItem(colName, e) {
-
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
-    const deletedCard = cards.find((x) => x.id === id)
-    let idx = 0
+    const deletedCard = cards.find((x) => x.id === id);
+    let idx = 0;
     cards.forEach((el, index) => {
       if (el.id === deletedCard.id) {
-        return idx = index
+        return (idx = index);
       }
-    })
-    cards.splice(idx, 1,);
+    });
+    cards.splice(idx, 1);
     await this.setState({
       [colName]: { cards, id: this.state[colName].id, colName: colName },
     });
@@ -234,15 +209,14 @@ class Kanban extends React.Component {
   async editItem(colName, e) {
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
-    const deletedCard = cards.find((x) => x.id === id)
-    let idx = 0
+    const deletedCard = cards.find((x) => x.id === id);
+    let idx = 0;
     cards.forEach((el, index) => {
       if (el.id === deletedCard.id) {
-        return idx = index
+        return (idx = index);
       }
-    })
-    // debugger
-    cards.splice(idx, 1,);
+    });
+    cards.splice(idx, 1);
     await this.setState({
       [colName]: { cards, id: this.state[colName].id, colName: colName },
     });
@@ -252,23 +226,27 @@ class Kanban extends React.Component {
   async onDragEnd(result) {
     const { destination, source, draggableId } = result;
     if (!destination) return;
-    if ( destination.droppableId === source.droppableId && destination.index === source.index) return;
-      const startColumn = this.state[source.droppableId].cards;
-      const endColumn = this.state[destination.droppableId].cards;
-      const startDupes = Array.from(startColumn);
-      const endDupes = Array.from(endColumn);
-      
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
+    const startColumn = this.state[source.droppableId].cards;
+    const endColumn = this.state[destination.droppableId].cards;
+    const startDupes = Array.from(startColumn);
+    const endDupes = Array.from(endColumn);
+
     if (endColumn === startColumn) {
-        let [removed] = startDupes.splice(source.index, 1)
-        startDupes.splice(destination.index, 0, removed);
-        this.setState({
-          [source.droppableId]: {
-            cards: startDupes,
-            id: this.state[destination.droppableId].id,
-            colName: source.droppableId,
-          }
-        })
-        } else {
+      let [removed] = startDupes.splice(source.index, 1);
+      startDupes.splice(destination.index, 0, removed);
+      this.setState({
+        [source.droppableId]: {
+          cards: startDupes,
+          id: this.state[destination.droppableId].id,
+          colName: source.droppableId,
+        },
+      });
+    } else {
       let [removed] = startDupes.splice(source.index, 1);
       endDupes.splice(destination.index, 0, removed);
       await this.setState({
@@ -281,18 +259,19 @@ class Kanban extends React.Component {
           cards: endDupes,
           id: this.state[destination.droppableId].id,
           colName: destination.droppableId,
-        }, 
-      })
-      this.updateLocalStorage()
+        },
+      });
+      this.updateLocalStorage();
     }
   }
 
   createSection(colName) {
-    // console.log(this.state)
-    // debugger;
     return (
       <div id="done-container">
         <h2>{colName}</h2>
+        <button className="mb-15" onClick={() => this.removeCol(colName)}>
+          -
+        </button>
         <button className="mb-15" onClick={() => this.addCard(colName)}>
           +
         </button>
@@ -306,11 +285,7 @@ class Kanban extends React.Component {
               >
                 {this.state[colName].cards.map((item, idx) => {
                   return (
-                    <Draggable
-                      key={item.id}
-                      draggableId={item.id}
-                      index={idx}
-                    >
+                    <Draggable key={item.id} draggableId={item.id} index={idx}>
                       {(provided) => {
                         return (
                           <div
@@ -318,11 +293,10 @@ class Kanban extends React.Component {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                           >
-                            {/* {console.log(item.title)} */}
-                            <Card 
-                              title={item.title} 
-                              description={item.description} 
-                              id={item.id} 
+                            <Card
+                              title={item.title}
+                              description={item.description}
+                              id={item.id}
                             />
                             <div className="item-footer lightred flex row">
                               {/* <button
@@ -353,19 +327,32 @@ class Kanban extends React.Component {
     );
   }
 
+  removeCol(colName) {
+    localStorage.removeItem(colName);
+    
+    // debugger
+    const idx = this.state.allColumns.indexOf(colName)
+    let columns = Array.from(this.state.allColumns)
+    columns.splice(idx, 1)
+    localStorage.setItem("allColumns", JSON.stringify(columns));
+    this.getLocalStorage();
+    // this.setState({allColumns: columns})
+    // console.log(this.state.allColumns.splice(idx, 1));
+  }
+
   async createColumn() {
-    let columns = this.state.allColumns
-    columns.push("superColumn");
-    console.log(columns)
+    let columns = this.state.allColumns;
+    columns.push(this.state.createColumn);
     await this.setState({
       allColumns: columns,
-      superColumn: {
+      [this.state.createColumn]: {
         cards: [],
         id: uuid(),
-        colName: "superColumn",
+        colName: this.state.createColumn,
       },
     });
-    console.log(this.state)
+    this.updateLocalStorage();
+    console.log(this.state);
   }
 
   modal() {
@@ -381,18 +368,21 @@ class Kanban extends React.Component {
   }
 
   render() {
-    // result => onDragEnd(result, columns, setColumns)
-    // this.clearAll()
-    
     return (
       <div>
         <DragDropContext onDragEnd={(result) => this.onDragEnd(result)}>
           <h1 className="main-title">Kanban</h1>
           <div className="createColumn">
-            create Column:
-            <button className="createColBtn" onClick={this.createColumn}>
-              +
-            </button>
+            <form onSubmit={() => this.createColumn()}>
+              create Column:
+              <input
+                type="text"
+                value={this.state.createColumn}
+                onChange={this.update("createColumn")}
+              />
+              <button className="createColBtn">+</button>
+            </form>
+            <button onClick={this.clearAll}>Reset to default</button>
           </div>
           <div className="space-around flex row bg-lightgray height-100">
             {this.state.allColumns.map((column, idx) => (
@@ -405,7 +395,6 @@ class Kanban extends React.Component {
             {this.createSection("done")} */}
           </div>
         </DragDropContext>
-        {/* {console.log(this.state)} */}
         {this.modal()}
       </div>
     );
@@ -413,59 +402,3 @@ class Kanban extends React.Component {
 }
 
 export default Kanban;
-// export default DragDropContext(HTML5Backend)(Kanban);
-
-
-//OLD ADD PROGRESS HTML 
-
-// <div className="flex row space-between todo-item mb-15">
-      //   New In Progress
-      //   <div>
-      //     <button className="item-button" onClick={this.editItem}>
-      //       Edit
-      //     </button>
-      //     <button
-      //       className="item-button ml-10"
-      //       onClick={(e) => this.deleteItem("inprogress", e)}
-      //     >
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>>
-      //     <button className="item-button" onClick={this.editItem}>
-      //       Edit
-      //     </button>
-      //     <button
-      //       className="item-button ml-10"
-      //       onClick={(e) => this.deleteItem("inprogress", e)}
-      //     >
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>utton className="item-button" onClick={this.editItem}>
-      //       Edit
-      //     </button>
-      //     <button
-      //       className="item-button ml-10"
-      //       onClick={(e) => this.deleteItem("inprogress", e)}
-      //     >
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>
-      //       Delete
-      //     </button>
-      //   </div>
-      // </div>
