@@ -81,7 +81,7 @@ class Kanban extends React.Component {
     }
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
     let cards;
     const colName = this.state.currentColumn
@@ -91,7 +91,7 @@ class Kanban extends React.Component {
       cards = JSON.parse(localStorage.getItem(colName));
     }
     const card = {title: this.state.currentTitle, description: this.state.currentDescription, id: uuid()};
-    this.setState({[this.state[colName].cards]: this.state[colName].cards.push(card)})
+    await this.setState({[this.state[colName].cards]: this.state[colName].cards.push(card)})
     this.updateLocalStorage();
     this.closeModal();
     this.setState({currentTitle: "", currentDescription: ""})
@@ -152,7 +152,7 @@ class Kanban extends React.Component {
     this.openModal();
   }
 
-  deleteItem(colName, e) {
+  async deleteItem(colName, e) {
 
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
@@ -165,13 +165,13 @@ class Kanban extends React.Component {
     })
     // debugger
     cards.splice(idx, 1,);
-    this.setState({
+    await this.setState({
       [colName]: { cards, id: this.state[colName].id, colName: colName },
     });
     this.updateLocalStorage();
   }
 
-  editItem(colName, e) {
+  async editItem(colName, e) {
     const id = e.currentTarget.parentElement.previousElementSibling.id;
     let cards = [...this.state[colName].cards];
     const deletedCard = cards.find((x) => x.id === id)
@@ -183,13 +183,13 @@ class Kanban extends React.Component {
     })
     // debugger
     cards.splice(idx, 1,);
-    this.setState({
+    await this.setState({
       [colName]: { cards, id: this.state[colName].id, colName: colName },
     });
     this.updateLocalStorage();
   }
 
-  onDragEnd(result) {
+  async onDragEnd(result) {
     const { destination, source, draggableId } = result;
     if (!destination) return;
     if ( destination.droppableId === source.droppableId && destination.index === source.index) return;
@@ -211,7 +211,7 @@ class Kanban extends React.Component {
         } else {
       let [removed] = startDupes.splice(source.index, 1);
       endDupes.splice(destination.index, 0, removed);
-      this.setState({
+      await this.setState({
         [source.droppableId]: {
           cards: startDupes,
           id: this.state[source.droppableId].id,
@@ -221,11 +221,10 @@ class Kanban extends React.Component {
           cards: endDupes,
           id: this.state[destination.droppableId].id,
           colName: destination.droppableId,
-        },
+        }, 
       })
+      this.updateLocalStorage()
     }
-    this.updateLocalStorage();
-    // this.createSection()
   }
 
   createSection(colName) {
