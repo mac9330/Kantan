@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/github.io/Kantan/static/css/main.8136a131.chunk.css",
-    "main.js": "/github.io/Kantan/static/js/main.d3485cf2.chunk.js",
-    "main.js.map": "/github.io/Kantan/static/js/main.d3485cf2.chunk.js.map",
-    "runtime-main.js": "/github.io/Kantan/static/js/runtime-main.e3a7d61d.js",
-    "runtime-main.js.map": "/github.io/Kantan/static/js/runtime-main.e3a7d61d.js.map",
-    "static/js/2.7035feeb.chunk.js": "/github.io/Kantan/static/js/2.7035feeb.chunk.js",
-    "static/js/2.7035feeb.chunk.js.map": "/github.io/Kantan/static/js/2.7035feeb.chunk.js.map",
-    "index.html": "/github.io/Kantan/index.html",
-    "precache-manifest.a404a840089134307d521a47b43df204.js": "/github.io/Kantan/precache-manifest.a404a840089134307d521a47b43df204.js",
-    "service-worker.js": "/github.io/Kantan/service-worker.js",
-    "static/css/main.8136a131.chunk.css.map": "/github.io/Kantan/static/css/main.8136a131.chunk.css.map",
-    "static/js/2.7035feeb.chunk.js.LICENSE.txt": "/github.io/Kantan/static/js/2.7035feeb.chunk.js.LICENSE.txt"
+    "main.css": "/Kantan/static/css/main.8136a131.chunk.css",
+    "main.js": "/Kantan/static/js/main.d3485cf2.chunk.js",
+    "main.js.map": "/Kantan/static/js/main.d3485cf2.chunk.js.map",
+    "runtime-main.js": "/Kantan/static/js/runtime-main.3372a3ee.js",
+    "runtime-main.js.map": "/Kantan/static/js/runtime-main.3372a3ee.js.map",
+    "static/js/2.7035feeb.chunk.js": "/Kantan/static/js/2.7035feeb.chunk.js",
+    "static/js/2.7035feeb.chunk.js.map": "/Kantan/static/js/2.7035feeb.chunk.js.map",
+    "index.html": "/Kantan/index.html",
+    "precache-manifest.67479b669fcb4ea8a4fc5fc814aa8c51.js": "/Kantan/precache-manifest.67479b669fcb4ea8a4fc5fc814aa8c51.js",
+    "service-worker.js": "/Kantan/service-worker.js",
+    "static/css/main.8136a131.chunk.css.map": "/Kantan/static/css/main.8136a131.chunk.css.map",
+    "static/js/2.7035feeb.chunk.js.LICENSE.txt": "/Kantan/static/js/2.7035feeb.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.e3a7d61d.js",
+    "static/js/runtime-main.3372a3ee.js",
     "static/js/2.7035feeb.chunk.js",
     "static/css/main.8136a131.chunk.css",
     "static/js/main.d3485cf2.chunk.js"
