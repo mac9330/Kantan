@@ -8,23 +8,24 @@ class Kanban extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      todos: {
-        cards: [],
-        id: uuid(),
-        colName: "todos",
-      },
-      inprog: {
-        cards: [],
-        id: uuid(),
-        colName: "inprog",
-      },
-      done: {
-        cards: [],
-        id: uuid(),
-        colName: "done",
-      },
-      allColumns: ["todos", "inprog", "done"],
-      currentColumn: "todos",
+      // todos: {
+      //   cards: [],
+      //   id: uuid(),
+      //   colName: "todos",
+      // },
+      // inprog: {
+      //   cards: [],
+      //   id: uuid(),
+      //   colName: "inprog",
+      // },
+      // done: {
+      //   cards: [],
+      //   id: uuid(),
+      //   colName: "done",
+      // },
+      // allColumns: ["todos", "inprog", "done"],
+      allColumns: [],
+      currentColumn: "",
       currentTitle: "",
       currentDescription: "",
     };
@@ -40,6 +41,7 @@ class Kanban extends React.Component {
     this.clearAll = this.clearAll.bind(this);
     this.modal = this.modal.bind(this);
     this.updateLocalStorage = this.updateLocalStorage.bind(this);
+    this.createColumn = this.createColumn.bind(this);
   }
 
   componentDidMount() {
@@ -47,37 +49,91 @@ class Kanban extends React.Component {
     // this.clearAll()
   }
 
+  componentWillUnmount() {
+
+  }
+
   updateLocalStorage() {
-    this.clearAll();
+    // this.clearAll();
     const allColumns = this.state.allColumns;
     for (let i = 0; i < allColumns.length; i++) {
       let cards = [];
       this.state[allColumns[i]].cards.forEach((card) => {
         cards.push(card)
         localStorage.setItem(allColumns[i], JSON.stringify(cards));
+        debugger
       });
     }
+    debugger
+    localStorage.setItem("allColumns", JSON.stringify(allColumns));
   }
 
-  getLocalStorage() {
+  async getLocalStorage() {
     let columns = [];
-    if (Object.keys(localStorage)) {
-      columns = Object.keys(localStorage);
-      for (let i = 0; i < columns.length; i++) {
-        let currentColumn = columns[i]
-        let columnItems = JSON.parse(localStorage.getItem(columns[i]));
-        for (let i = 0; i < columnItems.length; i++) {
-          let title = columnItems[i].title;
-          let description = columnItems[i].description;
-          let id = columnItems[i].id;
-          const card = {title: title, description: description, id: id};
-          this.setState({
-            [this.state[currentColumn].cards]: this.state[
-              currentColumn
-            ].cards.push(card),
+    if (!Object.keys(localStorage).length) {  // localstorage of all columns instead of length??
+      await this.setState({
+        allColumns: ["todos", "inprog", "done"],
+        todos: {
+          cards: [],
+          id: uuid(),
+          colName: "todos",
+        },
+        inprog: {
+          cards: [],
+          id: uuid(),
+          colName: "inprog",
+        },
+        done: {
+          cards: [],
+          id: uuid(),
+          colName: "done",
+        },
+      });
+      let test = {
+        cards: [],
+        id: uuid(),
+        colName: "done",
+      };
+      localStorage.setItem("todos", JSON.stringify(test));
+      localStorage.setItem("inprog", JSON.stringify(test));
+      localStorage.setItem("done", JSON.stringify(test));
+      localStorage.setItem(
+        "allColumns",
+        JSON.stringify(["todos", "inprog", "done"])
+      );
+    } else {
+    let allColumns = JSON.parse(localStorage.getItem("allColumns"));
+    // console.log(allColumns)
+        for (let i = 0; i < allColumns.length; i++) {
+          let currentColumn = allColumns[i];
+          // if (!allColumns.includes(currentColumn)) allColumns.push(currentColumn);
+          // await this.setState({ allColumns: allColumns });
+          await this.setState({
+            [currentColumn]: {
+              cards: [],
+              id: uuid(),
+              colName: `${currentColumn}`,
+            },
           });
+          const cards = [];
+          let columnItems = JSON.parse(localStorage.getItem(allColumns[i]));
+          console.log(columnItems)
+          let length = columnItems.cards.length;
+          debugger
+          for (let j = 0; j < length; j++) {
+            let title = columnItems.cards[j].title;
+            let description = columnItems.cards[j].description;
+            let id = columnItems.cards[j].id;
+            const card = { title: title, description: description, id: id };
+            // cards = [];
+            cards.push(card)
+          }
+          await this.setState({
+              [this.state[currentColumn].cards]: cards,
+            });
         }
-      }
+      this.setState({ allColumns: allColumns });
+      localStorage.removeItem("allColumns");
     }
   }
 
@@ -228,9 +284,10 @@ class Kanban extends React.Component {
   }
 
   createSection(colName) {
-    console.log(this.state)
+    // console.log(this.state)
+    // debugger;
     return (
-      <section id="done-container" className="flex column width-20">
+      <div id="done-container">
         <h2>{colName}</h2>
         <button className="mb-15" onClick={() => this.addCard(colName)}>
           +
@@ -264,12 +321,12 @@ class Kanban extends React.Component {
                               id={item.id} 
                             />
                             <div className="item-footer lightred flex row">
-                              <button
+                              {/* <button
                                 className="item-button"
                                 onClick={(e) => this.editItem(colName, e)}
                               >
                                 Edit
-                              </button>
+                              </button> */}
                               <button
                                 className="item-button ml-10"
                                 onClick={(e) => this.deleteItem(colName, e)}
@@ -288,8 +345,23 @@ class Kanban extends React.Component {
             );
           }}
         </Droppable>
-      </section>
+      </div>
     );
+  }
+
+  async createColumn() {
+    let columns = this.state.allColumns
+    columns.push("superColumn");
+    console.log(columns)
+    await this.setState({
+      allColumns: columns,
+      superColumn: {
+        cards: [],
+        id: uuid(),
+        colName: "superColumn",
+      },
+    });
+    console.log(this.state)
   }
 
   modal() {
@@ -307,14 +379,26 @@ class Kanban extends React.Component {
   render() {
     // result => onDragEnd(result, columns, setColumns)
     // this.clearAll()
+    
     return (
       <div>
-        <DragDropContext onDragEnd={result => this.onDragEnd(result)}>
+        <DragDropContext onDragEnd={(result) => this.onDragEnd(result)}>
           <h1 className="main-title">Kanban</h1>
+          <div className="createColumn">
+            create Column:
+            <button className="createColBtn" onClick={this.createColumn}>
+              +
+            </button>
+          </div>
           <div className="space-around flex row bg-lightgray height-100">
-            {this.createSection("todos")}
+            {this.state.allColumns.map((column, idx) => (
+              <section className="flex column width-20" key={idx}>
+                {this.createSection(column)}
+              </section>
+            ))}
+            {/* {this.createSection("todos")}
             {this.createSection("inprog")}
-            {this.createSection("done")}
+            {this.createSection("done")} */}
           </div>
         </DragDropContext>
         {/* {console.log(this.state)} */}

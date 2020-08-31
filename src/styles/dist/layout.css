@@ -51,6 +51,7 @@ body > * {
 
 .mb-15 {
   margin-bottom: 15px;
+  width: 100%;
 }
 
 .mr-10 {
@@ -101,4 +102,9 @@ body > * {
 
 .lightred {
   background-color: #ca7373;
+}
+
+.columns {
+  width: 100%;
+  height: 100%;
 }
