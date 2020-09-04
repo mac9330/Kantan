@@ -223,14 +223,31 @@ class Kanban extends React.Component {
     this.updateLocalStorage();
   }
 
+  dragCol(result) {
+    
+  }
+
   async onDragEnd(result) {
-    const { destination, source, draggableId } = result;
+    const { destination, source } = result;
     if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     )
       return;
+    if (result.type === "column") {
+      const allColumns = Array.from(this.state.allColumns)
+      const [removed] = allColumns.splice(source.index, 1)
+      allColumns.splice(destination.index, 0, removed)
+      const newState = {
+        ...this.state,
+        allColumns: allColumns
+      }
+      await this.setState(newState)
+      debugger;
+      this.updateLocalStorage();
+      return;
+    }
     const startColumn = this.state[source.droppableId].cards;
     const endColumn = this.state[destination.droppableId].cards;
     const startDupes = Array.from(startColumn);
@@ -275,54 +292,56 @@ class Kanban extends React.Component {
         <button className="mb-15 blue" onClick={() => this.addCard(colName)}>
           +
         </button>
-        <Droppable droppableId={colName}>
-          {(provided) => {
-            return (
-              <div
-                id={colName}
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                {this.state[colName].cards.map((item, idx) => {
-                  return (
-                    <Draggable key={item.id} draggableId={item.id} index={idx}>
-                      {(provided) => {
-                        return (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <Card
-                              title={item.title}
-                              description={item.description}
-                              id={item.id}
-                            />
-                            <div className="item-footer lightred flex row">
-                              {/* <button
-                                className="item-button"
-                                onClick={(e) => this.editItem(colName, e)}
-                              >
-                                Edit
-                              </button> */}
-                              <button
-                                className="item-button ml-10"
-                                onClick={(e) => this.deleteItem(colName, e)}
-                              >
-                                Delete
-                              </button>
+        <div>
+          <Droppable droppableId={colName}>
+            {(provided) => {
+              return (
+                <div
+                  id={colName}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {this.state[colName].cards.map((item, idx) => {
+                    return (
+                      <Draggable key={item.id} draggableId={item.id} index={idx}>
+                        {(provided) => {
+                          return (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <Card
+                                title={item.title}
+                                description={item.description}
+                                id={item.id}
+                              />
+                              <div className="item-footer lightred flex row">
+                                {/* <button
+                                  className="item-button"
+                                  onClick={(e) => this.editItem(colName, e)}
+                                >
+                                  Edit
+                                </button> */}
+                                <button
+                                  className="item-button ml-10"
+                                  onClick={(e) => this.deleteItem(colName, e)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      }}
-                    </Draggable>
-                  );
-                })}
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
+                          );
+                        }}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
+          </Droppable>
+        </div>
       </div>
     );
   }
@@ -335,8 +354,6 @@ class Kanban extends React.Component {
     columns.splice(idx, 1)
     localStorage.setItem("allColumns", JSON.stringify(columns));
     this.getLocalStorage();
-    // this.setState({allColumns: columns})
-    // console.log(this.state.allColumns.splice(idx, 1));
   }
 
   async createColumn() {
@@ -366,6 +383,44 @@ class Kanban extends React.Component {
     );
   }
 
+  mapColumns() {
+  return  (
+    <Droppable droppableId="allColumns" direction="horizontal" type="column">
+      {(provided) => {
+        return (
+            <div
+              id={"Columns"}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+            <div className="space-around flex row bg-lightgray height-100">
+              {this.state.allColumns.map((column, idx) => (
+                <Draggable key={idx} draggableId={idx + "Column"} index={idx}>
+                  {(provided) => {
+                    return (
+                          <div className="draggable-col">
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                            <section className="flex column width-20" key={idx}>
+                              {this.createSection(column)}
+                            </section>
+                          </div>
+                      </div>
+                      );
+                    }}
+                </Draggable>
+              ))}
+            </div>
+            {provided.placeholder}
+          </div>
+        );}}
+      </Droppable>
+    )
+  }
+
   render() {
     return (
       <div>
@@ -384,16 +439,7 @@ class Kanban extends React.Component {
             </form>
             <button className="reset-button" onClick={this.clearAll}>Reset to default</button>
           </div>
-          <div className="space-around flex row bg-lightgray height-100">
-            {this.state.allColumns.map((column, idx) => (
-              <section className="flex column width-20" key={idx}>
-                {this.createSection(column)}
-              </section>
-            ))}
-            {/* {this.createSection("todos")}
-            {this.createSection("inprog")}
-            {this.createSection("done")} */}
-          </div>
+          {this.mapColumns()}
         </DragDropContext>
         {this.modal()}
       </div>
