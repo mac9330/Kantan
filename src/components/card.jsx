@@ -20,13 +20,13 @@ class Card extends React.Component {
 
   render() {
     return (
-      <div id={this.state.id}>
-        <div className="flex column todo-item">
-          <div className="flex row space-between">
-            <h3 className="ml-10">{this.state.title}</h3>
+      <div className="mb-2 mt-3" id={this.state.id}>
+        <div>
+          <div>
+            <h6 className=" pt-3 text-sm text-secondary">{this.state.title}</h6>
           </div>
           <div>
-            <p className="ml-10 item-description">{this.state.description}</p>
+            <p className="pt-3 text-secondary">{this.state.description}</p>
           </div>
         </div>
       </div>

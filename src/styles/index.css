@@ -2,8 +2,18 @@
 
 @import "./reset.scss";
 
-@import "./layout.scss";
+/* @import "./layout.scss";
 
-@import "./board.scss";
+@import "./board.scss"; */
 
-@import "./modal.scss"
+@import "./modal.scss";
+
+#container {
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.card-drag {
+    min-width: 100%;
+    min-height: 500px;
+}

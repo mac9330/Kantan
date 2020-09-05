@@ -2,6 +2,12 @@ import React from "react";
 import Card from './card.jsx';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import uuid from "uuid/v4"
+import {Button, Row, Col, Container, Navbar, Nav, NavDropdown, Form, Link} from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook, faLinkedin, faAngellist, faGithub, faBlogger, faReadme } from "@fortawesome/free-brands-svg-icons";
+
+
+
 
 
 class Kanban extends React.Component {
@@ -111,6 +117,7 @@ class Kanban extends React.Component {
   }
 
   async handleSubmit(e) {
+    debugger
     e.preventDefault();
     let cards;
     const colName = this.state.currentColumn;
@@ -119,11 +126,18 @@ class Kanban extends React.Component {
     } else {
       cards = JSON.parse(localStorage.getItem(colName));
     }
+
     const card = {
       title: this.state.currentTitle,
       description: this.state.currentDescription,
       id: uuid(),
     };
+
+    if (card.title === "") {
+      alert('Please Enter A Valid Title')
+      return; 
+    }
+
     await this.setState({
       [this.state[colName].cards]: this.state[colName].cards.push(card),
     });
@@ -147,11 +161,12 @@ class Kanban extends React.Component {
 
   createTodo() {
     return (
-      <div className="create-todo-container">
+      <div>
         <form onSubmit={this.handleSubmit.bind(this)}>
-          <div className="mb-15">
+          <div>
             <label>
               <input
+                className="mt-5"
                 placeholder="Title"
                 type="text"
                 value={this.state.currentTitle}
@@ -160,6 +175,7 @@ class Kanban extends React.Component {
             </label>
             <label>
               <input
+                className="mt-5"
                 placeholder="Description"
                 type="text"
                 value={this.state.currentDescription}
@@ -167,7 +183,14 @@ class Kanban extends React.Component {
               />
             </label>
           </div>
-          <button className="submit-todo">Submit</button>
+          <Row>
+            <Button className="btn-sm ml-2 mt-5 mb-2 mr-0" type="submit">
+              Submit
+            </Button>
+            <Button className="btn-sm m-2 mt-5 ml-0" onClick={this.closeModal}>
+              Close
+            </Button>
+          </Row>
         </form>
       </div>
     );
@@ -284,53 +307,72 @@ class Kanban extends React.Component {
 
   createSection(colName) {
     return (
-      <div id="done-container">
+      <div id="container">
         <h2>{colName}</h2>
-        <button className="mb-15 blue" onClick={() => this.removeCol(colName)}>
-          -
-        </button>
-        <button className="mb-15 blue" onClick={() => this.addCard(colName)}>
-          +
-        </button>
+        <Col>
+          <Row>
+            <Button
+              className="btn-block  btn-light text-primary m-2"
+              onClick={() => this.removeCol(colName)}
+            >
+              -
+            </Button>
+          </Row>
+          <Row>
+            <Button
+              className="btn-block  btn-light text-primary m-2"
+              onClick={() => this.addCard(colName)}
+            >
+              +
+            </Button>
+          </Row>
+        </Col>
         <div>
-          <Droppable droppableId={colName}>
+          <Droppable droppableId={colName} className="dropable" direction="vertical">
             {(provided) => {
               return (
                 <div
                   id={colName}
+                  className="card-drag"
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                 >
                   {this.state[colName].cards.map((item, idx) => {
                     return (
-                      <Draggable key={item.id} draggableId={item.id} index={idx}>
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={idx}
+                      >
                         {(provided) => {
                           return (
-                            <div
+                            <Col
+                              className="bg-light shadow shadow-lg mt-3 border-primary border"
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
+                              
                             >
                               <Card
                                 title={item.title}
                                 description={item.description}
                                 id={item.id}
                               />
-                              <div className="item-footer lightred flex row">
-                                {/* <button
-                                  className="item-button"
+                              <div className=" flex flex-column justify-content-end">
+                                {/* <Button
+                                  
                                   onClick={(e) => this.editItem(colName, e)}
                                 >
                                   Edit
-                                </button> */}
-                                <button
-                                  className="item-button ml-10"
+                                </Button> */}
+                                <Button
+                                  className="btn-sm py-0 mb-2 btn-danger"
                                   onClick={(e) => this.deleteItem(colName, e)}
                                 >
-                                  Delete
-                                </button>
+                                  X
+                                </Button>
                               </div>
-                            </div>
+                            </Col>
                           );
                         }}
                       </Draggable>
@@ -358,6 +400,17 @@ class Kanban extends React.Component {
 
   async createColumn() {
     let columns = this.state.allColumns;
+
+    if (this.state.createColumn === "" || columns.includes(this.state.createColumn)) {
+      alert("Please Enter a Valid Column Name")
+      return;
+    }
+
+    if (this.state.allColumns.length > 10) {
+      alert("Eleven columns is the max. Please delete one if you would like to create a new column.")
+      return;
+    }
+
     columns.push(this.state.createColumn);
     await this.setState({
       allColumns: columns,
@@ -374,75 +427,123 @@ class Kanban extends React.Component {
   modal() {
     return (
       <div className="newTodoForm">
-        <div className="modal-content">
-          <h1>Add Todo</h1>
+        <div className="modal-content w-25 h-50">
+          <h1 className=" text-secondary">Add Todo</h1>
           {this.createTodo()}
-          <button className="modal-close" onClick={this.closeModal}>Close</button>
         </div>
       </div>
     );
   }
 
   mapColumns() {
-  return  (
-    <Droppable droppableId="allColumns" direction="horizontal" type="column">
+  return (
+    <Droppable
+      className="dropable"
+      droppableId="allColumns"
+      direction="horizontal"
+      type="column"
+    >
       {(provided) => {
         return (
-            <div
-              id={"Columns"}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-            <div className="space-around flex row bg-lightgray height-100">
+          <div
+            id={"Columns"}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            <Row className={`justify-content-left flex-nowrap row-cols-${(this.state.allColumns.length) / 12}`}>
               {this.state.allColumns.map((column, idx) => (
-                <Draggable key={idx} draggableId={idx + "Column"} index={idx}>
+                <Draggable
+                  className="border-secondary border-warning"
+                  key={idx}
+                  draggableId={idx + "Column"}
+                  index={idx}
+                >
                   {(provided) => {
                     return (
-                          <div className="draggable-col">
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                            <section className="flex column width-20" key={idx}>
-                              {this.createSection(column)}
-                            </section>
-                          </div>
-                      </div>
-                      );
-                    }}
+                      <Container
+                        className="progress-bar progress-bar-striped m-4 progress-bar-animated pb-3 justify-content-start shadow-lg shadow border-warning border p-3"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <section key={idx}>
+                          {this.createSection(column)}
+                        </section>
+                      </Container>
+                    );
+                  }}
                 </Draggable>
               ))}
-            </div>
+            </Row>
             {provided.placeholder}
           </div>
-        );}}
-      </Droppable>
-    )
+        );
+      }}
+    </Droppable>
+  );
   }
 
   render() {
     return (
-      <div>
-        <DragDropContext onDragEnd={(result) => this.onDragEnd(result)}>
-          <h1 className="main-title">Kanban</h1>
-          <div className="createColumn">
-            <form className="columnForm" onSubmit={() => this.createColumn()}>
-
+      <>
+        <Navbar
+          sticky="top"
+          className="w-100 navbar navbar-dark bg-primary mb-1"
+        >
+          <Navbar.Brand className="main-title">Kanban</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <NavDropdown title="Mackenzie Young" id="basic-nav-dropdown">
+                <NavDropdown.Item href="#action/3.1">
+                  <FontAwesomeIcon icon={faLinkedin} />
+                </NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.2">
+                  <FontAwesomeIcon icon={faAngellist} />
+                </NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.3">
+                  <FontAwesomeIcon icon={faGithub} />
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="#action/3.4">
+                  <FontAwesomeIcon icon={faReadme} />
+                </NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
+            <Nav.Link
+              href="https://github.com/mac9330/Kantan"
+              className=" nav text-white"
+            >
+              ReadMe <FontAwesomeIcon icon={faReadme} />
+            </Nav.Link>
+            <Form inline onSubmit={() => this.createColumn()}>
               <input
-                placeholder="Add Column"
                 type="text"
+                placeholder="Add Column"
+                className="mr-sm-1"
                 value={this.state.createColumn}
                 onChange={this.update("createColumn")}
               />
-              <button className="createColBtn">+</button>
-            </form>
-            <button className="reset-button" onClick={this.clearAll}>Reset to default</button>
-          </div>
-          {this.mapColumns()}
-        </DragDropContext>
-        {this.modal()}
-      </div>
+              <Button
+                variant="outline-success"
+                className="btn-link bg-darken-4 text-decoration-none table-hover bg-white btn-sm m-1 pl-1 pr-1 pt-0 pb-0"
+                type="submit"
+              >
+                +
+              </Button>
+            </Form>
+          </Navbar.Collapse>
+        </Navbar>
+        <Container fluid>
+          <DragDropContext onDragEnd={(result) => this.onDragEnd(result)}>
+            <Col className="justify-content-end">
+              <Button onClick={this.clearAll}>Reset to default</Button>
+            </Col>
+            {this.mapColumns()}
+          </DragDropContext>
+          {this.modal()}
+        </Container>
+      </>
     );
   }
 }
