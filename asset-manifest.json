@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Kantan/static/css/main.dd680b6e.chunk.css",
-    "main.js": "/Kantan/static/js/main.22ee4381.chunk.js",
-    "main.js.map": "/Kantan/static/js/main.22ee4381.chunk.js.map",
+    "main.js": "/Kantan/static/js/main.2acb0cab.chunk.js",
+    "main.js.map": "/Kantan/static/js/main.2acb0cab.chunk.js.map",
     "runtime-main.js": "/Kantan/static/js/runtime-main.3372a3ee.js",
     "runtime-main.js.map": "/Kantan/static/js/runtime-main.3372a3ee.js.map",
     "static/css/2.f3cffc9e.chunk.css": "/Kantan/static/css/2.f3cffc9e.chunk.css",
     "static/js/2.3e3f1514.chunk.js": "/Kantan/static/js/2.3e3f1514.chunk.js",
     "static/js/2.3e3f1514.chunk.js.map": "/Kantan/static/js/2.3e3f1514.chunk.js.map",
     "index.html": "/Kantan/index.html",
-    "precache-manifest.c35e73d55570572561e9b9bc24c5b515.js": "/Kantan/precache-manifest.c35e73d55570572561e9b9bc24c5b515.js",
+    "precache-manifest.d701a6f41c262f1f01e3d4f9657bd2c0.js": "/Kantan/precache-manifest.d701a6f41c262f1f01e3d4f9657bd2c0.js",
     "service-worker.js": "/Kantan/service-worker.js",
     "static/css/2.f3cffc9e.chunk.css.map": "/Kantan/static/css/2.f3cffc9e.chunk.css.map",
     "static/css/main.dd680b6e.chunk.css.map": "/Kantan/static/css/main.dd680b6e.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.f3cffc9e.chunk.css",
     "static/js/2.3e3f1514.chunk.js",
     "static/css/main.dd680b6e.chunk.css",
-    "static/js/main.22ee4381.chunk.js"
+    "static/js/main.2acb0cab.chunk.js"
   ]
 }
