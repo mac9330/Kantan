@@ -117,7 +117,6 @@ class Kanban extends React.Component {
   }
 
   async handleSubmit(e) {
-    debugger
     e.preventDefault();
     let cards;
     const colName = this.state.currentColumn;
@@ -267,7 +266,6 @@ class Kanban extends React.Component {
         allColumns: allColumns
       }
       await this.setState(newState)
-      debugger;
       this.updateLocalStorage();
       return;
     }
@@ -406,8 +404,8 @@ class Kanban extends React.Component {
       return;
     }
 
-    if (this.state.allColumns.length > 10) {
-      alert("Eleven columns is the max. Please delete one if you would like to create a new column.")
+    if (this.state.allColumns.length > 4) {
+      alert("5 columns is the max. Please delete one if you would like to create a new column.")
       return;
     }
 
@@ -436,6 +434,7 @@ class Kanban extends React.Component {
   }
 
   mapColumns() {
+    debugger;
   return (
     <Droppable
       className="dropable"
@@ -450,7 +449,7 @@ class Kanban extends React.Component {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            <Row className={`justify-content-left flex-nowrap row-cols-${(this.state.allColumns.length) / 12}`}>
+            <Row className={`justify-content-left flex-nowrap row-cols-${(12 / this.state.allColumns.length)}`}>
               {this.state.allColumns.map((column, idx) => (
                 <Draggable
                   className="border-secondary border-warning"
@@ -460,8 +459,8 @@ class Kanban extends React.Component {
                 >
                   {(provided) => {
                     return (
-                      <Container
-                        className="progress-bar progress-bar-striped m-4 progress-bar-animated pb-3 justify-content-start shadow-lg shadow border-warning border p-3"
+                      <Col
+                        className={`col-${12 / this.state.allColumns.length-1} progress-bar progress-bar-striped m-3 progress-bar-animated pb-3 justify-content-start shadow-lg shadow border-warning border p-2`}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
@@ -469,7 +468,7 @@ class Kanban extends React.Component {
                         <section key={idx}>
                           {this.createSection(column)}
                         </section>
-                      </Container>
+                      </Col>
                     );
                   }}
                 </Draggable>
@@ -495,18 +494,18 @@ class Kanban extends React.Component {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               <NavDropdown title="Mackenzie Young" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">
-                  <FontAwesomeIcon icon={faLinkedin} />
+                <NavDropdown.Item href="https://www.linkedin.com/in/mackenzie-young-296787189/">
+                  <FontAwesomeIcon icon={faLinkedin} /> LinkedIn
                 </NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">
-                  <FontAwesomeIcon icon={faAngellist} />
+                <NavDropdown.Item href="https://angel.co/u/mac-young-1">
+                  <FontAwesomeIcon icon={faAngellist} /> AngelList
                 </NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">
-                  <FontAwesomeIcon icon={faGithub} />
+                <NavDropdown.Item href="https://github.com/mac9330">
+                  <FontAwesomeIcon icon={faGithub} /> Github
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">
-                  <FontAwesomeIcon icon={faReadme} />
+                <NavDropdown.Item href="https://mac9330.github.io/">
+                  <FontAwesomeIcon icon={faReadme} /> Portfolio-Site
                 </NavDropdown.Item>
               </NavDropdown>
             </Nav>
