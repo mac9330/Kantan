@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "629b86ebe7f6bbb6ffab39dbbaaaaa8a",
+    "revision": "ff34e6e3e2864fc39a0a889dd857f558",
     "url": "/Kantan/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/Kantan/static/css/2.f3cffc9e.chunk.css"
   },
   {
-    "revision": "2a477839c3b56a0f4de4",
+    "revision": "92acf29251dc22b64c37",
     "url": "/Kantan/static/css/main.dd680b6e.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/Kantan/static/js/2.3e3f1514.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2a477839c3b56a0f4de4",
-    "url": "/Kantan/static/js/main.22ee4381.chunk.js"
+    "revision": "92acf29251dc22b64c37",
+    "url": "/Kantan/static/js/main.2acb0cab.chunk.js"
   },
   {
     "revision": "4a065315f960aee4c8cb",

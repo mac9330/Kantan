@@ -404,8 +404,8 @@ class Kanban extends React.Component {
       return;
     }
 
-    if (this.state.allColumns.length > 4) {
-      alert("5 columns is the max. Please delete one if you would like to create a new column.")
+    if (this.state.allColumns.length >= 3) {
+      alert("3 columns is the max. Please delete one if you would like to create a new column.")
       return;
     }
 
@@ -434,7 +434,6 @@ class Kanban extends React.Component {
   }
 
   mapColumns() {
-    debugger;
   return (
     <Droppable
       className="dropable"
@@ -449,7 +448,7 @@ class Kanban extends React.Component {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            <Row className={`justify-content-left flex-nowrap row-cols-${(12 / this.state.allColumns.length)}`}>
+            <Row className={`justify-content-start flex-nowrap m-3 w-100`}>
               {this.state.allColumns.map((column, idx) => (
                 <Draggable
                   className="border-secondary border-warning"
@@ -460,7 +459,7 @@ class Kanban extends React.Component {
                   {(provided) => {
                     return (
                       <Col
-                        className={`col-${12 / this.state.allColumns.length-1} progress-bar progress-bar-striped m-3 progress-bar-animated pb-3 justify-content-start shadow-lg shadow border-warning border p-2`}
+                        className={`col-3 progress-bar progress-bar-striped m-3 progress-bar-animated pb-3 justify-content-start shadow-lg shadow border-warning border p-2`}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
