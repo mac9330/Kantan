@@ -507,6 +507,21 @@ class Kanban extends React.Component {
                   <FontAwesomeIcon icon={faReadme} /> Portfolio-Site
                 </NavDropdown.Item>
               </NavDropdown>
+              <NavDropdown title="Anthony E Cruz" id="basic-nav-dropdown">
+                <NavDropdown.Item href="https://www.linkedin.com/in/anthonyecruz/">
+                  <FontAwesomeIcon icon={faLinkedin} /> LinkedIn
+                </NavDropdown.Item>
+                <NavDropdown.Item href="https://angel.co/u/anthony-cruz-13">
+                  <FontAwesomeIcon icon={faAngellist} /> AngelList
+                </NavDropdown.Item>
+                <NavDropdown.Item href="https://github.com/Anthony-E-Cruz">
+                  <FontAwesomeIcon icon={faGithub} /> Github
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="anthonyecruz.com">
+                  <FontAwesomeIcon icon={faReadme} /> Portfolio-Site
+                </NavDropdown.Item>
+              </NavDropdown>
             </Nav>
             <Nav.Link
               href="https://github.com/mac9330/Kantan"
